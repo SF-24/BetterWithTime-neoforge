@@ -62,8 +62,15 @@ import com.bwt.utils.kiln_block_cook_overlay.KilnBlockCookingProgressPayload;
 //import net.minecraft.text.Text;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,31 +91,62 @@ public class BetterWithTime {
 	public static final BwtGameRules gameRules = new BwtGameRules();
 	public static final BwtSoundEvents soundEvents = new BwtSoundEvents();
 	public static final TrackedDataHandlers dataHandlers = new TrackedDataHandlers();
-	public static MenuType<BlockDispenserScreenHandler> blockDispenserScreenHandler = new MenuType<BlockDispenserScreenHandler>(BlockDispenserScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-	public static MenuType<CauldronScreenHandler, AbstractCookingPotData> cauldronScreenHandler = new ExtendedScreenHandlerType<>(CauldronScreenHandler::new, AbstractCookingPotData.PACKET_CODEC);
-	public static MenuType<CrucibleScreenHandler, AbstractCookingPotData> crucibleScreenHandler = new ExtendedScreenHandlerType<>(CrucibleScreenHandler::new, AbstractCookingPotData.PACKET_CODEC);
-	public static MenuType<MillStoneScreenHandler> millStoneScreenHandler = new MenuType<MillStoneScreenHandler>(MillStoneScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-	public static MenuType<PulleyScreenHandler> pulleyScreenHandler = new MenuType<PulleyScreenHandler>(PulleyScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-	public static MenuType<MechHopperScreenHandler> mechHopperScreenHandler = new MenuType<MechHopperScreenHandler>(MechHopperScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-	public static MenuType<SoulForgeScreenHandler> soulForgeScreenHandler = new MenuType<SoulForgeScreenHandler>(SoulForgeScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
 
-	static {
-		blockDispenserScreenHandler = Registry.register(Registries.MENU, Id.of("block_dispenser"), blockDispenserScreenHandler);
-		cauldronScreenHandler = Registry.register(Registries.MENU, Id.of("cauldron"), cauldronScreenHandler);
-		crucibleScreenHandler = Registry.register(Registries.MENU, Id.of("crucible"), crucibleScreenHandler);
-		millStoneScreenHandler = Registry.register(Registries.MENU, Id.of("mill_stone"), millStoneScreenHandler);
-		pulleyScreenHandler = Registry.register(Registries.MENU, Id.of("pulley"), pulleyScreenHandler);
-		mechHopperScreenHandler = Registry.register(Registries.MENU, Id.of("hopper"), mechHopperScreenHandler);
-		soulForgeScreenHandler = Registry.register(Registries.MENU, Id.of("soul_forge"), soulForgeScreenHandler);
-	}
+    private static final DeferredRegister<MenuType<?>> MENUS =
+            DeferredRegister.create(Registries.MENU, BetterWithTime.MOD_ID);
 
-	@Override
-	public void onInitialize() {
+    public static MenuType<MillStoneScreenHandler> MILL_STONE_SCREEN_HANDLER =
+            DeferredHelper.get(MENUS.register("mill_stone", () ->
+                    new MenuType<>(MillStoneScreenHandler::new, FeatureFlags.VANILLA_SET)));
+
+    public static MenuType<PulleyScreenHandler> PULLEY_SCREEN_HANDLER =
+            DeferredHelper.get(MENUS.register("pulley", () ->
+                    new MenuType<>(PulleyScreenHandler::new, FeatureFlags.VANILLA_SET)));
+
+    public static MenuType<MechHopperScreenHandler> MECH_HOPPER_SCREEN_HANDLER =
+            DeferredHelper.get(MENUS.register("hopper", () ->
+                    new MenuType<>(MechHopperScreenHandler::new, FeatureFlags.VANILLA_SET)));
+
+    public static MenuType<SoulForgeScreenHandler> SOUL_FORGE_SCREEN_HANDLER =
+            DeferredHelper.get(MENUS.register("soul_forge", () ->
+                    new MenuType<>(SoulForgeScreenHandler::new, FeatureFlags.VANILLA_SET)));
+
+    public static MenuType<CauldronScreenHandler> CAULDRON_SCREEN_HANDLER =
+            DeferredHelper.get(MENUS.register("cauldron", () ->
+                    new MenuType<>((syncId, inv) -> new CauldronScreenHandler(syncId, inv), FeatureFlags.VANILLA_SET)));
+
+    public static MenuType<CrucibleScreenHandler> CRUCIBLE_SCREEN_HANDLER =
+            DeferredHelper.get(MENUS.register("crucible", () ->
+                    new MenuType<>((syncId, inv) -> new CrucibleScreenHandler(syncId, inv), FeatureFlags.VANILLA_SET)));
+
+
+//	public static MenuType<BlockDispenserScreenHandler> blockDispenserScreenHandler = new MenuType<BlockDispenserScreenHandler>(BlockDispenserScreenHandler::new, FeatureFlags.VANILLA_SET);
+//	public static ExtendedScreenHandlerType<CauldronScreenHandler, AbstractCookingPotData> cauldronScreenHandler = new ExtendedScreenHandlerType<>(CauldronScreenHandler::new, AbstractCookingPotData.PACKET_CODEC);
+//	public static ExtendedScreenHandlerType<CrucibleScreenHandler, AbstractCookingPotData> crucibleScreenHandler = new ExtendedScreenHandlerType<>(CrucibleScreenHandler::new, AbstractCookingPotData.PACKET_CODEC);
+//	public static MenuType<MillStoneScreenHandler> millStoneScreenHandler = new MenuType<MillStoneScreenHandler>(MillStoneScreenHandler::new, FeatureFlags.VANILLA_SET);
+//	public static MenuType<PulleyScreenHandler> pulleyScreenHandler = new MenuType<PulleyScreenHandler>(PulleyScreenHandler::new, FeatureFlags.VANILLA_SET);
+//	public static MenuType<MechHopperScreenHandler> mechHopperScreenHandler = new MenuType<MechHopperScreenHandler>(MechHopperScreenHandler::new, FeatureFlags.VANILLA_SET);
+//	public static MenuType<SoulForgeScreenHandler> soulForgeScreenHandler = new MenuType<SoulForgeScreenHandler>(SoulForgeScreenHandler::new, FeatureFlags.VANILLA_SET);
+//
+//	static {
+//		blockDispenserScreenHandler = Registry.register(Registries.MENU, ResourceLocation.parse("block_dispenser"), blockDispenserScreenHandler);
+//		cauldronScreenHandler = Registry.register(Registries.MENU, ResourceLocation.parse("cauldron"), cauldronScreenHandler);
+//		crucibleScreenHandler = Registry.register(Registries.MENU, ResourceLocation.parse("crucible"), crucibleScreenHandler);
+//		millStoneScreenHandler = Registry.register(Registries.MENU, ResourceLocation.parse("mill_stone"), millStoneScreenHandler);
+//		pulleyScreenHandler = Registry.register(Registries.MENU, ResourceLocation.parse("pulley"), pulleyScreenHandler);
+//		mechHopperScreenHandler = Registry.register(Registries.MENU, ResourceLocation.parse("hopper"), mechHopperScreenHandler);
+//		soulForgeScreenHandler = Registry.register(Registries.MENU, ResourceLocation.parse("soul_forge"), soulForgeScreenHandler);
+//	}
+
+    public BetterWithTime(IEventBus modEventBus, IEventBus forgeEventBus) {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		blocks.onInitialize();
+        MENUS.register(modEventBus);
+        modEventBus.addListener(this::commonSetup);
+
+        blocks.onInitialize();
 		blockEntities.onInitialize();
 		items.onInitialize();
 		entities.onInitialize();
@@ -163,7 +201,7 @@ public class BetterWithTime {
 			if (!source.isBuiltin()) {
 				return;
 			}
-			if (key.equals(EntityType.WOLF.getLootTableId())) {
+			if (key.equals(EntityType.WOLF.getDefaultLootTable())) {
 				LootPool.Builder poolBuilder = LootPool.builder()
 						.with(ItemEntry.builder(BwtItems.wolfChopItem)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0f, 3.0f)))

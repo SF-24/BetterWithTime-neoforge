@@ -1,10 +1,9 @@
 plugins {
     // Neoforge Gradle
-//    id 'net.neoforged.gradle.usedev' version '7.1.18'
-    id 'net.neoforged.moddev' version '1.0.11'
-
-
+//    id 'net.neoforged.moddev' version '1.0.11'
+//    id 'fabric-loom' version "${loom_version}"
     id 'maven-publish'
+    id 'dev.architectury.loom' version '1.11-SNAPSHOT' //-SNAPSHOT
 }
 
 version = project.mod_version
@@ -13,6 +12,8 @@ group = project.maven_group
 base {
 	archivesName = project.archives_base_name
 }
+
+apply plugin: "dev.architectury.loom"
 
 repositories {
 	// Add repositories to retrieve artifacts from in here.
@@ -24,9 +25,16 @@ repositories {
 		name = "TerraformersMC"
 		url = "https://maven.terraformersmc.com/"
 	}
-//    mavenCentral()
+//    maven {
+//        name = 'NeoForged'
+//        url = 'https://maven.neoforged.net/releases'
+//    }
     maven { url "https://maven.neoforged.net/releases" }
-//    gradlePluginPortal()
+
+    gradlePluginPortal()
+    mavenCentral()
+//    maven { url "https://maven.architectury.dev" }
+//    maven { url "https://maven.shedaniel.me/" }
 
     /* --- */
     exclusiveContent {
@@ -46,20 +54,28 @@ repositories {
 //	configureDataGeneration()
 //}
 
-neoForge {        // or `neoforge { ... }` depending on template
-    version = "21.1.219"
 
-    // Optional but supported:
-    // additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('vanilla.jar'))
-}
+
+//neoForge {        // or `neoforge { ... }` depending on template
+//    "21.1.219" // version =
+//
+//    // Optional but supported:
+//    // additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('vanilla.jar'))
+//}
 
 dependencies {
 	// To change the versions see the gradle.properties file
-//	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-//	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.layered() {
+        officialMojangMappings()
+        "net.fabricmc:yarn:${project.yarn_mappings}:v2" // mappings
+//        parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:@PARCHMENTMC_MAPPINGS_YY.MM.DD@zip")
+    }
 //	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    implementation 'net.neoforged:neoforge:21.1.219'
+    neoForge "net.neoforged:neoforge:21.1.219"
+
+//    implementation 'net.neoforged:neoforge:21.1.219'
 
 	//For EMI https://github.com/RatherBeLunar/BetterWithTime/issues/1
 	/* --- */

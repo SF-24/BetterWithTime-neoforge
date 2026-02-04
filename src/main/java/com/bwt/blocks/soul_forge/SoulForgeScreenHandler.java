@@ -139,12 +139,12 @@ public class SoulForgeScreenHandler extends AbstractRecipeScreenHandler<Crafting
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return canUse(this.context, player, BwtBlocks.soulForgeBlock);
+    public boolean stillValid(PlayerEntity player) {
+        return stillValid(this.context, player, BwtBlocks.soulForgeBlock);
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
+    public ItemStack quickMoveStack(PlayerEntity player, int slot) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot2 = this.slots.get(slot);
         // Vanilla decompiled code has these as magic numbers.
