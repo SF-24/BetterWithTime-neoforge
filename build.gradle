@@ -1,6 +1,10 @@
 plugins {
-	id 'fabric-loom' version "${loom_version}"
-	id 'maven-publish'
+    // Neoforge Gradle
+//    id 'net.neoforged.gradle.usedev' version '7.1.18'
+    id 'net.neoforged.moddev' version '1.0.11'
+
+
+    id 'maven-publish'
 }
 
 version = project.mod_version
@@ -13,9 +17,6 @@ base {
 repositories {
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
 
 	//For EMI https://github.com/RatherBeLunar/BetterWithTime/issues/1
 	/* --- */
@@ -23,7 +24,11 @@ repositories {
 		name = "TerraformersMC"
 		url = "https://maven.terraformersmc.com/"
 	}
-	/* --- */
+//    mavenCentral()
+    maven { url "https://maven.neoforged.net/releases" }
+//    gradlePluginPortal()
+
+    /* --- */
     exclusiveContent {
         forRepository {
             maven {
@@ -37,40 +42,29 @@ repositories {
     }
 }
 
-loom {
-    splitEnvironmentSourceSets()
+//fabricApi {
+//	configureDataGeneration()
+//}
 
-	mods {
-		"betterwithtime" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
-	}
+neoForge {        // or `neoforge { ... }` depending on template
+    version = "21.1.219"
 
-}
-
-fabricApi {
-	configureDataGeneration()
+    // Optional but supported:
+    // additionalMinecraftArtifacts.put('vanillaDeobfuscated', project.file('vanilla.jar'))
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+//	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+//	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+//	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
-	// Uncomment the following line to enable the deprecated Fabric API modules. 
-	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
-
-	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
+    implementation 'net.neoforged:neoforge:21.1.219'
 
 	//For EMI https://github.com/RatherBeLunar/BetterWithTime/issues/1
 	/* --- */
-	modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
-	modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
+	compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
+    runtimeOnly  "dev.emi:emi-neoforge:${emi_version}"
 	/* --- */
 
 }

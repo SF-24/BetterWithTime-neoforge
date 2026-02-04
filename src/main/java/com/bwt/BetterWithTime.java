@@ -26,48 +26,54 @@ import com.bwt.tags.BwtItemTags;
 import com.bwt.utils.Id;
 import com.bwt.utils.TrackedDataHandlers;
 import com.bwt.utils.kiln_block_cook_overlay.KilnBlockCookingProgressPayload;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
-import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
-import net.fabricmc.fabric.api.registry.TillableBlockRegistry;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.HoeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.condition.*;
-import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.function.EnchantedCountIncreaseLootFunction;
-import net.minecraft.loot.function.FurnaceSmeltLootFunction;
-import net.minecraft.loot.function.SetCountLootFunction;
-import net.minecraft.loot.provider.number.UniformLootNumberProvider;
-import net.minecraft.predicate.entity.EntityFlagsPredicate;
-import net.minecraft.predicate.entity.EntityPredicate;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.Text;
+//import net.fabricmc.api.ModInitializer;
+//import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
+//import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+//import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
+//import net.fabricmc.fabric.api.registry.FuelRegistry;
+//import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
+//import net.fabricmc.fabric.api.registry.TillableBlockRegistry;
+//import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+//import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+//import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+//import net.fabricmc.loader.api.FabricLoader;
+//import net.minecraft.block.Block;
+//import net.minecraft.block.BlockState;
+//import net.minecraft.block.Blocks;
+//import net.minecraft.entity.EntityType;
+//import net.minecraft.item.HoeItem;
+//import net.minecraft.item.Item;
+//import net.minecraft.item.ItemStack;
+//import net.minecraft.item.Items;
+//import net.minecraft.loot.LootPool;
+//import net.minecraft.loot.condition.*;
+//import net.minecraft.loot.context.LootContext;
+//import net.minecraft.loot.entry.ItemEntry;
+//import net.minecraft.loot.function.EnchantedCountIncreaseLootFunction;
+//import net.minecraft.loot.function.FurnaceSmeltLootFunction;
+//import net.minecraft.loot.function.SetCountLootFunction;
+//import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+//import net.minecraft.predicate.entity.EntityFlagsPredicate;
+//import net.minecraft.predicate.entity.EntityPredicate;
+//import net.minecraft.registry.Registries;
+//import net.minecraft.registry.Registry;
+//import net.minecraft.resource.featuretoggle.FeatureFlags;
+//import net.minecraft.screen.ScreenHandlerType;
+//import net.minecraft.text.Text;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.inventory.MenuType;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BetterWithTime implements ModInitializer {
+@Mod(BetterWithTime.MOD_ID)
+public class BetterWithTime {
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
-    public static final Logger LOGGER = LoggerFactory.getLogger("betterwithtime");
+    public static final String MOD_ID = "betterwithtime";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	public static final BwtBlocks blocks = new BwtBlocks();
 	public static final BwtBlockEntities blockEntities = new BwtBlockEntities();
@@ -78,22 +84,22 @@ public class BetterWithTime implements ModInitializer {
 	public static final BwtGameRules gameRules = new BwtGameRules();
 	public static final BwtSoundEvents soundEvents = new BwtSoundEvents();
 	public static final TrackedDataHandlers dataHandlers = new TrackedDataHandlers();
-	public static ScreenHandlerType<BlockDispenserScreenHandler> blockDispenserScreenHandler = new ScreenHandlerType<>(BlockDispenserScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-	public static ExtendedScreenHandlerType<CauldronScreenHandler, AbstractCookingPotData> cauldronScreenHandler = new ExtendedScreenHandlerType<>(CauldronScreenHandler::new, AbstractCookingPotData.PACKET_CODEC);
-	public static ExtendedScreenHandlerType<CrucibleScreenHandler, AbstractCookingPotData> crucibleScreenHandler = new ExtendedScreenHandlerType<>(CrucibleScreenHandler::new, AbstractCookingPotData.PACKET_CODEC);
-	public static ScreenHandlerType<MillStoneScreenHandler> millStoneScreenHandler = new ScreenHandlerType<>(MillStoneScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-	public static ScreenHandlerType<PulleyScreenHandler> pulleyScreenHandler = new ScreenHandlerType<>(PulleyScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-	public static ScreenHandlerType<MechHopperScreenHandler> mechHopperScreenHandler = new ScreenHandlerType<>(MechHopperScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-	public static ScreenHandlerType<SoulForgeScreenHandler> soulForgeScreenHandler = new ScreenHandlerType<>(SoulForgeScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
+	public static MenuType<BlockDispenserScreenHandler> blockDispenserScreenHandler = new MenuType<BlockDispenserScreenHandler>(BlockDispenserScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
+	public static MenuType<CauldronScreenHandler, AbstractCookingPotData> cauldronScreenHandler = new ExtendedScreenHandlerType<>(CauldronScreenHandler::new, AbstractCookingPotData.PACKET_CODEC);
+	public static MenuType<CrucibleScreenHandler, AbstractCookingPotData> crucibleScreenHandler = new ExtendedScreenHandlerType<>(CrucibleScreenHandler::new, AbstractCookingPotData.PACKET_CODEC);
+	public static MenuType<MillStoneScreenHandler> millStoneScreenHandler = new MenuType<MillStoneScreenHandler>(MillStoneScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
+	public static MenuType<PulleyScreenHandler> pulleyScreenHandler = new MenuType<PulleyScreenHandler>(PulleyScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
+	public static MenuType<MechHopperScreenHandler> mechHopperScreenHandler = new MenuType<MechHopperScreenHandler>(MechHopperScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
+	public static MenuType<SoulForgeScreenHandler> soulForgeScreenHandler = new MenuType<SoulForgeScreenHandler>(SoulForgeScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
 
 	static {
-		blockDispenserScreenHandler = Registry.register(Registries.SCREEN_HANDLER, Id.of("block_dispenser"), blockDispenserScreenHandler);
-		cauldronScreenHandler = Registry.register(Registries.SCREEN_HANDLER, Id.of("cauldron"), cauldronScreenHandler);
-		crucibleScreenHandler = Registry.register(Registries.SCREEN_HANDLER, Id.of("crucible"), crucibleScreenHandler);
-		millStoneScreenHandler = Registry.register(Registries.SCREEN_HANDLER, Id.of("mill_stone"), millStoneScreenHandler);
-		pulleyScreenHandler = Registry.register(Registries.SCREEN_HANDLER, Id.of("pulley"), pulleyScreenHandler);
-		mechHopperScreenHandler = Registry.register(Registries.SCREEN_HANDLER, Id.of("hopper"), mechHopperScreenHandler);
-		soulForgeScreenHandler = Registry.register(Registries.SCREEN_HANDLER, Id.of("soul_forge"), soulForgeScreenHandler);
+		blockDispenserScreenHandler = Registry.register(Registries.MENU, Id.of("block_dispenser"), blockDispenserScreenHandler);
+		cauldronScreenHandler = Registry.register(Registries.MENU, Id.of("cauldron"), cauldronScreenHandler);
+		crucibleScreenHandler = Registry.register(Registries.MENU, Id.of("crucible"), crucibleScreenHandler);
+		millStoneScreenHandler = Registry.register(Registries.MENU, Id.of("mill_stone"), millStoneScreenHandler);
+		pulleyScreenHandler = Registry.register(Registries.MENU, Id.of("pulley"), pulleyScreenHandler);
+		mechHopperScreenHandler = Registry.register(Registries.MENU, Id.of("hopper"), mechHopperScreenHandler);
+		soulForgeScreenHandler = Registry.register(Registries.MENU, Id.of("soul_forge"), soulForgeScreenHandler);
 	}
 
 	@Override
